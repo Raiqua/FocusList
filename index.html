@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FocusList — Organize your day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="header__brand">
+      <span class="header__mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 13.5L10 19.5L22 6.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <div>
+        <h1 class="header__title">FocusList</h1>
+        <p class="header__subtitle">Organize your day. Get things done.</p>
+      </div>
+    </div>
+
+    <div class="header__meta">
+      <p class="header__date" id="currentDate"></p>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+        <svg class="theme-toggle__icon theme-toggle__icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 2.5V5M12 19V21.5M21.5 12H19M5 12H2.5M18.4 5.6L16.6 7.4M7.4 16.6L5.6 18.4M18.4 18.4L16.6 16.6M7.4 7.4L5.6 5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <svg class="theme-toggle__icon theme-toggle__icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 14.2A8.6 8.6 0 1 1 9.8 4a7 7 0 0 0 10.2 10.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===== Left column: stats + add task ===== -->
+    <section class="rail" aria-label="Task overview and creation">
+
+      <div class="stats" role="group" aria-label="Task statistics">
+        <div class="stat-card stat-card--total">
+          <p class="stat-card__value" id="statTotal">0</p>
+          <p class="stat-card__label">Total tasks</p>
+        </div>
+        <div class="stat-card stat-card--done">
+          <p class="stat-card__value" id="statCompleted">0</p>
+          <p class="stat-card__label">Completed</p>
+        </div>
+        <div class="stat-card stat-card--pending">
+          <p class="stat-card__value" id="statPending">0</p>
+          <p class="stat-card__label">Pending</p>
+        </div>
+
+        <div class="progress" aria-hidden="false">
+          <div class="progress__top">
+            <span id="progressCaption">0 of 0 tasks completed</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Overall completion" id="progressBar">
+            <div class="progress__fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="add-task">
+        <h2 class="add-task__title">What needs to be done?</h2>
+        <form id="addTaskForm" novalidate>
+          <label class="visually-hidden" for="taskInput">Task title</label>
+          <input
+            type="text"
+            id="taskInput"
+            name="title"
+            placeholder="Enter a task title…"
+            autocomplete="off"
+            maxlength="140"
+          >
+          <p class="field-error" id="taskInputError" role="alert" hidden>Please enter a task title before adding.</p>
+
+          <fieldset class="priority-select">
+            <legend class="visually-hidden">Priority</legend>
+            <input type="radio" id="priorityHigh" name="priority" value="high">
+            <label for="priorityHigh" class="priority-chip priority-chip--high">
+              <span class="priority-dot" aria-hidden="true"></span>High
+            </label>
+
+            <input type="radio" id="priorityMedium" name="priority" value="medium" checked>
+            <label for="priorityMedium" class="priority-chip priority-chip--medium">
+              <span class="priority-dot" aria-hidden="true"></span>Medium
+            </label>
+
+            <input type="radio" id="priorityLow" name="priority" value="low">
+            <label for="priorityLow" class="priority-chip priority-chip--low">
+              <span class="priority-dot" aria-hidden="true"></span>Low
+            </label>
+          </fieldset>
+
+          <button type="submit" class="btn btn--primary btn--block" id="addTaskBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add task
+          </button>
+        </form>
+      </div>
+
+      <p class="quote" id="dailyQuote"></p>
+    </section>
+
+    <!-- ===== Right column: search, filters, task list ===== -->
+    <section class="board" aria-label="Task list">
+
+      <div class="controls">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <label class="visually-hidden" for="searchInput">Search tasks by title</label>
+          <input type="text" id="searchInput" placeholder="Search tasks…" autocomplete="off">
+          <button type="button" id="clearSearch" class="search__clear" aria-label="Clear search" hidden>&times;</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group" role="group" aria-label="Filter by status">
+            <button type="button" class="filter-chip is-active" data-filter-type="status" data-value="all">All</button>
+            <button type="button" class="filter-chip" data-filter-type="status" data-value="active">Active</button>
+            <button type="button" class="filter-chip" data-filter-type="status" data-value="completed">Completed</button>
+          </div>
+
+          <div class="filter-group" role="group" aria-label="Filter by priority">
+            <button type="button" class="filter-chip is-active" data-filter-type="priority" data-value="all">All priorities</button>
+            <button type="button" class="filter-chip filter-chip--high" data-filter-type="priority" data-value="high">High</button>
+            <button type="button" class="filter-chip filter-chip--medium" data-filter-type="priority" data-value="medium">Medium</button>
+            <button type="button" class="filter-chip filter-chip--low" data-filter-type="priority" data-value="low">Low</button>
+          </div>
+
+          <div class="filter-row__end">
+            <label class="visually-hidden" for="sortSelect">Sort tasks</label>
+            <select id="sortSelect">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="priority">Priority</option>
+              <option value="alphabetical">Alphabetical</option>
+            </select>
+            <button type="button" class="btn btn--ghost" id="resetFilters" hidden>Reset filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="board__header">
+        <p id="resultsCaption">Showing all tasks</p>
+        <button type="button" class="btn btn--text" id="clearCompleted">Clear completed</button>
+      </div>
+
+      <ul class="task-list" id="taskList" aria-live="polite"></ul>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+          <rect x="10" y="8" width="36" height="42" rx="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M18 20H38M18 28H38M18 36H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h3 id="emptyStateTitle">No tasks yet</h3>
+        <p id="emptyStateBody">Add your first task and start getting things done.</p>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<!-- ===== Edit modal ===== -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <h2 id="editModalTitle">Edit task</h2>
+    <form id="editTaskForm">
+      <label for="editTaskInput">Task title</label>
+      <input type="text" id="editTaskInput" maxlength="140">
+      <p class="field-error" id="editTaskInputError" role="alert" hidden>Task title can't be empty.</p>
+
+      <fieldset class="priority-select">
+        <legend>Priority</legend>
+        <input type="radio" id="editPriorityHigh" name="editPriority" value="high">
+        <label for="editPriorityHigh" class="priority-chip priority-chip--high"><span class="priority-dot" aria-hidden="true"></span>High</label>
+
+        <input type="radio" id="editPriorityMedium" name="editPriority" value="medium">
+        <label for="editPriorityMedium" class="priority-chip priority-chip--medium"><span class="priority-dot" aria-hidden="true"></span>Medium</label>
+
+        <input type="radio" id="editPriorityLow" name="editPriority" value="low">
+        <label for="editPriorityLow" class="priority-chip priority-chip--low"><span class="priority-dot" aria-hidden="true"></span>Low</label>
+      </fieldset>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" id="cancelEdit">Cancel</button>
+        <button type="submit" class="btn btn--primary">Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== Delete confirm ===== -->
+<div class="modal-overlay" id="deleteOverlay" hidden>
+  <div class="modal modal--small" role="alertdialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <h2 id="deleteModalTitle">Delete this task?</h2>
+    <p class="modal__body" id="deleteModalBody">This can't be undone.</p>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" id="cancelDelete">Cancel</button>
+      <button type="button" class="btn btn--danger" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toasts ===== -->
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
